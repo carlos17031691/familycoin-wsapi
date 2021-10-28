@@ -8,10 +8,21 @@ const register = async (data) => {
         data.password = bcrypt.hashSync(data.password, 12);
         const createUser = await userModel.newUser(data);  
         const wallet = await walletService.createWallet(createUser) 
-        delete createUser.password, createUser.createdAt     
-        return {createUser, wallet};
+        delete createUser.password
+        delete createUser.createdAt 
+        const payload = {
+            sub: createUser.id,
+            name: createUser.name,
+            email: createUser.email,
+            wallet: wallet.address,
+            balance: wallet.balance
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: parseInt(process.env.JWT_TTL)
+        });
+        return {createUser, wallet, token};
+           
     } catch (err) {
-        console.log(err)
         throw err;
     }
 }
