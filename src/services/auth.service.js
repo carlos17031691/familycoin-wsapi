@@ -41,7 +41,7 @@ const login = async (data) => {
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
                 expiresIn: parseInt(process.env.JWT_TTL)
             });
-            return {token}
+            return {token, user}
         } else {
             throw err;
         }
@@ -51,5 +51,38 @@ const login = async (data) => {
     }
 }
 
+const emailValidate = async (email) => {
+    try {
+        const user = await userModel.getUserByEmail(email);
+        console.log(user)
+        if(user != null) {
+            const userValid = {
+                name: user.name,
+                email: user.email,
+                address: user.wallet.address
+            }
+            return userValid
+        } else {
+            return null;
+        }
+        
+    } catch (err) {
+        throw err;
+    }
+}
+
+const getUserInfo = async (token) => {
+    const base64String = token.split('.')[1];
+   const decodedValue = JSON.parse(Buffer.from(base64String,'base64').toString('ascii'));
+    try {
+        const user = await userModel.getUserByEmail(decodedValue.email);
+        return user
+    } catch (err) {
+        console.log(err)
+        throw err;
+    }
+}
 exports.register = register
 exports.login = login
+exports.emailValidate = emailValidate
+exports.getUserInfo = getUserInfo

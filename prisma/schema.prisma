@@ -8,12 +8,14 @@ generator client {
 }
 
 model User {
-    id        Int       @id @default(autoincrement())
-    createdAt DateTime  @default(now())
-    name      String
-    email     String    @unique
-    password  String
-    wallet    Wallet?
+    id            Int       @id @default(autoincrement())
+    createdAt     DateTime  @default(now())
+    name          String
+    email         String    @unique
+    password      String
+    wallet        Wallet?
+    sentTransactions Transaction[] @relation("sent")
+    receivedTransactions Transaction[]  @relation("recived") 
 }
 
 model Wallet {
@@ -23,4 +25,17 @@ model Wallet {
     address     String    @unique
     privateKey  String    @unique
     balance     Decimal   @default(0.00000000)
+}
+
+model Transaction {
+    id          Int       @id @default(autoincrement())
+    from        User      @relation("sent",fields: [fromId], references: [id])
+    fromId      Int
+    to          User      @relation("recived",fields: [toId], references: [id])
+    toId        Int
+    amount      Decimal   @default(0)
+    status      Int //0 pendiente, 1 completada
+    hash        String
+    description String    @default("")
+    createdAt   DateTime  @default(now())
 }

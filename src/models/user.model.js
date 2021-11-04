@@ -18,13 +18,29 @@ const getUserByEmail = async (email) => {
             },
             include: {
                 wallet: true,
+                sentTransactions: {
+                    take:5,
+                    orderBy: [
+                        {
+                            createdAt: 'desc'
+                        }
+                    ]
+                },
+                receivedTransactions: {
+                    take: 5,
+                    orderBy: [
+                        {
+                            createdAt: 'desc'
+                        }
+                    ]
+                } 
               },
           })
     } catch (error) {
+        console.log(error)
         throw error
     }
 }
-
 
 exports.newUser = newUser;
 exports.getUserByEmail = getUserByEmail;

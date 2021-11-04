@@ -16,8 +16,9 @@ const newWallet = async (dataWallet) => {
             "error": error
         }
     }
-    
 }
+
+
 
 
 exports.newWallet = newWallet;
